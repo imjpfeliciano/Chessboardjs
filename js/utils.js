@@ -1,6 +1,5 @@
 const WHITE = 'w';
 const BLACK = 'b';
-
 const PAWN = 'P';
 const ROOK = 'R';
 const BISHOP = 'B';
@@ -11,10 +10,10 @@ const KING = 'K';
 var boardPosition = {
     "a8":"bR",
     "b8":"bN",
-    //"c8":"bB",
+    "c8":"bB",
     //"d8":"bQ",
     //"e8":"bK",
-    //"f8":"bB",
+    "f8":"bB",
     "g8":"bN",
     "h8":"bR",
     "a7":"bP",
@@ -35,10 +34,10 @@ var boardPosition = {
     "h2":"wP",
     "a1":"wR",
     "b1":"wN",
-    //"c1":"wB",
+    "c1":"wB",
     //"d1":"wQ",
     //"e1":"wK",
-    //"f1":"wB",
+    "f1":"wB",
     "g1":"wN",
     "h1":"wR"
 };
