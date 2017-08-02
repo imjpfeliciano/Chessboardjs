@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="chessboardjs-0.3.0/css/chessboard-0.3.0.min.css">
+  <script src="jquery-2.1.1.min.js"></script>
+  <script src="chessboardjs-0.3.0/js/chessboard-0.3.0.min.js"></script>
+  <script src="utils.js"></script>
+  <script src="game-ui.js"></script>
+  <script src="game.js"></script>
+</head>
+<body>
+  <div id="board" style="width: 400px"></div>
+  <p>Remember, we'll evaluate both design and implementation, it's better to have two features done well, than
+  5 implemented badly. </p>
+  <p>Some rules to remember</p>
+  <ul>
+    <li><a href="http://en.wikipedia.org/wiki/Castling">Castling</a></li>
+    <li><a href="http://en.wikipedia.org/wiki/En_passant">En Passant</a></li>
+    <li>If you're on check the only valid moves are those that let you on a no-check state</li>
+    <li>If a move let you on a check state that move is invalid</li>
+    <li>If the current player is not on check but has no valid moves available the games ends as a draw</li>
+    <li>If the current player is on check and has no way to remove it's status a checkmate is declared</li>
+    <li>Everytime a player puts on check its opponent the event must be declared</li>
+    <li>Pawns becomes queens if they get to the opponent's first row</li>
+  </ul>
+</body>
+</html>
