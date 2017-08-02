@@ -192,6 +192,12 @@ function init() {
         return false;
     }
 
+    /**
+     * Check the quadrant in which the bishop is moving
+     * @param {int} rowDistance 
+     * @param {int} colDistance 
+     * @returns {object}
+     */
     function getBishopMoveOrientation(rowDistance, colDistance) {
         if(rowDistance > 0 && colDistance < 0) return {x: 1, y: -1};
         if(rowDistance > 0 && colDistance > 0) return {x: 1, y: 1};
@@ -199,6 +205,11 @@ function init() {
         if(rowDistance < 0 && colDistance > 0) return {x: -1, y: 1};
     }
 
+    /**
+     * @param {char} currentPlayer 
+     * @param {string} source 
+     * @param {string} target 
+     */
     function validateBishopMove(currentPlayer, source, target) {
         if(target == 'offboard') return false;
         var currentMove = window.Utils.getInformation(source, target);
