@@ -168,7 +168,23 @@ function init() {
     }
 
     function validateKnightMove(currentPlayer, source, target) {
-        return true;
+        if(target == 'offboard') return false;
+        var currentMove = window.Utils.getInformation(source, target);
+        var position = window.GameUI.getPieces();
+        var currentTurn = window.GameUI.getCurrentTurn();
+
+        //check if is turn of the selected piece color
+        if(currentTurn != currentPlayer) return false;
+
+        if( (
+            Math.abs(currentMove.rowDistance) == 1 && Math.abs(currentMove.colDistance) == 2 
+            || (Math.abs(currentMove.rowDistance) == 2 && Math.abs(currentMove.colDistance) == 1)
+            )
+            && (position[target] == undefined || position[target][0] != currentPlayer) ) {
+            return true;
+        }
+
+        return false;
     }
 
     function validateBishopMove(currentPlayer, source, target) {
@@ -183,7 +199,7 @@ function init() {
     castling will be check here
     */
     function validateKingMove(currentPlayer, source, target) {
-        return true;
+        return true;  
     }
 
     //case function to validate each piece separately
