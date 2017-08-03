@@ -57,12 +57,7 @@ function init() {
      * @param  {string} source
      * @param  {string} target
      */
-    function validatePawnMove(currentPlayer, source, target) {
-        if(target == 'offboard') return false;
-        var currentMove = window.Utils.getInformation(source, target);
-        var position = window.GameUI.getPieces();
-        var currentTurn = window.GameUI.getCurrentTurn();
-
+    function validatePawnMove(currentPlayer, source, target, currentMove, position, currentTurn) {
         if(Math.abs(currentMove.colDistance) > 1) return false;
         if(currentTurn != currentPlayer) return false;
 
@@ -107,12 +102,7 @@ function init() {
      * @param {string} source 
      * @param {string} target 
      */
-    function validateFirstRookMove(currentPlayer, source, target) {
-        if(target == 'offboard') return false;
-        var currentMove = window.Utils.getInformation(source, target);
-        var position = window.GameUI.getPieces();
-        var currentTurn = window.GameUI.getCurrentTurn();
-
+    function validateFirstRookMove(currentPlayer, source, target, currentMove) {
         //if it is the first time a rook piece is moved, then give a sign in the players object
         if( ((currentMove.srcCol == 1 || currentMove.srcCol == 8) && currentMove.srcRow == 1 && currentPlayer == WHITE && players[WHITE].rooks[currentMove.srcCol] == 0) 
          || ((currentMove.srcCol == 1 || currentMove.srcCol == 8) && currentMove.srcRow == 8 && currentPlayer == BLACK && players[BLACK].rooks[currentMove.srcCol] == 0) ) {
@@ -125,12 +115,7 @@ function init() {
      * @param {string} source 
      * @param {string} target 
      */
-    function validateRookMove(currentPlayer, source, target) {
-        if(target == 'offboard') return false;
-        var currentMove = window.Utils.getInformation(source, target);
-        var position = window.GameUI.getPieces();
-        var currentTurn = window.GameUI.getCurrentTurn();
-
+    function validateRookMove(currentPlayer, source, target, currentMove, position, currentTurn) {
         //check if is turn of the selected piece color
         if((currentTurn != currentPlayer) || (currentMove.colDistance && currentMove.rowDistance)) return false;
 
@@ -172,12 +157,7 @@ function init() {
      * @param  {string} source
      * @param  {string} target
      */
-    function validateKnightMove(currentPlayer, source, target) {
-        if(target == 'offboard') return false;
-        var currentMove = window.Utils.getInformation(source, target);
-        var position = window.GameUI.getPieces();
-        var currentTurn = window.GameUI.getCurrentTurn();
-
+    function validateKnightMove(currentPlayer, source, target, currentMove, position, currentTurn) {
         //check if is turn of the selected piece color
         if(currentTurn != currentPlayer) return false;
 
@@ -210,12 +190,7 @@ function init() {
      * @param {string} source 
      * @param {string} target 
      */
-    function validateBishopMove(currentPlayer, source, target) {
-        if(target == 'offboard') return false;
-        var currentMove = window.Utils.getInformation(source, target);
-        var position = window.GameUI.getPieces();
-        var currentTurn = window.GameUI.getCurrentTurn();
-
+    function validateBishopMove(currentPlayer, source, target, currentMove, position, currentTurn) {
         //check if is turn of the selected piece color
         if(currentTurn != currentPlayer) return false;
 
@@ -247,34 +222,92 @@ function init() {
         return validateRookMove(currentPlayer, source, target) || validateBishopMove(currentPlayer, source, target) ;
     }
 
-    /*
-    castling will be check here
-    */
-    function validateKingMove(currentPlayer, source, target) {
-        return true;  
+    /**
+     * @param {object} board 
+     * @param {object} moveInformation 
+     * @param {char} currentPlayer 
+     */
+    function validateCastlingMove(board, moveInformation, currentPlayer) {
+        if(players[currentPlayer].king == 1) return false;
+        
+        var currentRowNumber = moveInformation.srcRow;
+        var towerPosition = '';
+
+        if(moveInformation.tarCol == 7) {
+            if(players[currentPlayer].rooks[8] != 0) return false;
+            towerPosition = 'h' + currentRowNumber;
+            for(var i=6; i <=7; i++) {
+                var columnLetter = window.Utils.getColumnLetter(i);
+                var currentPosition = columnLetter + currentRowNumber;
+
+                if(board[currentPosition] != undefined) return false;
+            }
+        } else if (moveInformation.tarCol == 3){
+            if(players[currentPlayer].rooks[1] != 0) return false;
+            towerPosition = 'a' + currentRowNumber;
+            for(var i=2; i <=4; i++) {
+                var columnLetter = window.Utils.getColumnLetter(i);
+                var currentPosition = columnLetter + currentRowNumber;
+                
+                if(board[currentPosition] != undefined) return false;
+            }
+        }
+
+        window.GameUI.setCastlingFlag(true, towerPosition);
+        return true; 
+    }
+
+    /**
+     * @param {char} currentPlayer 
+     * @param {string} source 
+     * @param {string} target 
+     */
+    function validateKingMove(currentPlayer, source, target, currentMove, position, currentTurn) {
+        //check if is turn of the selected piece color
+        if(currentTurn != currentPlayer) return false;
+        if(Math.abs(currentMove.rowDistance) > 1) return false;
+        
+        //validate castrling here
+        if( Math.abs(currentMove.colDistance) == 2 && ((currentMove.tarRow == 1 && currentPlayer == WHITE) || (currentMove.tarRow == 8 && currentPlayer == BLACK)) ) {
+            return validateCastlingMove(position, currentMove, currentPlayer);
+        } else {
+            if( (currentMove.colDistance >= -1 && currentMove.colDistance <= 1) 
+                && (currentMove.rowDistance >= -1 && currentMove.rowDistance <= 1)
+                && (position[target] == undefined || position[target][0] != currentPlayer)
+            ) {
+                players[currentPlayer].king = 1;
+                console.log(players);
+                return true;
+            } 
+        }
+        return false;  
     }
 
     //case function to validate each piece separately
     function checkValidMove(player, piece, source, target) {
+        var currentMove = window.Utils.getInformation(source, target);
+        var position = window.GameUI.getPieces();
+        var currentTurn = window.GameUI.getCurrentTurn();
+
         switch(piece) {
-            case 'P': return validatePawnMove(player, source, target);
+            case 'P': return validatePawnMove(player, source, target, currentMove, position, currentTurn);
             case 'R': 
-                if(validateRookMove(player, source, target)) {
-                    validateFirstRookMove(player, source, target);
+                if(validateRookMove(player, source, target, currentMove, position, currentTurn)) {
+                    validateFirstRookMove(player, source, target, currentMove);
                     return true;
                 } else {
                     return false;
                 }
-            case 'N': return validateKnightMove(player, source, target);
-            case 'B': return validateBishopMove(player, source, target);
-            case 'Q': return validateQueenMove(player, source, target);
-            case 'K': return validateKingMove(player, source, target);
+            case 'N': return validateKnightMove(player, source, target, currentMove, position, currentTurn);
+            case 'B': return validateBishopMove(player, source, target, currentMove, position, currentTurn);
+            case 'Q': return validateQueenMove(player, source, target, currentMove, position, currentTurn);
+            case 'K': return validateKingMove(player, source, target, currentMove, position, currentTurn);
         }
     }
 
 
     function pieceMoveHandler(from, to) {
-        if(from == to) return false;
+        if(from == to || to == 'offboard') return false;
         window.GameUI.resetFlags(false);
 
         position = window.board.position();
