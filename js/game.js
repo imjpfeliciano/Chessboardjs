@@ -21,7 +21,7 @@ function init() {
 //       K: King
 //     i.e a1: "bN" would place a black knight at the bottom left corner of the board.
 
-    function isInCheck(player, position) {
+    function isInCheck(player, board) {
         return false;
     }
 
@@ -218,8 +218,8 @@ function init() {
 
     //The queen uses rookMoves for rows and columns and bishopMoves for diagonals,
     //so if any of these moves are valid, the queen move also is valid
-    function validateQueenMove(currentPlayer, source, target) {
-        return validateRookMove(currentPlayer, source, target) || validateBishopMove(currentPlayer, source, target) ;
+    function validateQueenMove(currentPlayer, source, target, currentMove, position, currentTurn) {
+        return validateRookMove(currentPlayer, source, target, currentMove, position, currentTurn) || validateBishopMove(currentPlayer, source, target, currentMove, position, currentTurn) ;
     }
 
     /**
