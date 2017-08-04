@@ -11,8 +11,13 @@
         $(container).append('<img src="img/chesspieces/wikipedia/' + color + piece + '.png" style="height: 49px; width: 49px;">');
     }
 
+    function showError(message) {
+        toastr.error(message);
+    }
+
     window.UI = {
         setImage: setImage,
-        deleteImage: removePiece
+        deleteImage: removePiece,
+        showErrorMessage: showError
     }
 }());

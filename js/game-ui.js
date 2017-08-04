@@ -17,7 +17,8 @@
   function pieceDrop(source, target, piece, newPos, oldPos, orientation) {
     //if it isn't a valid move revert the chessboard to previous status
     if (moveHandler && !moveHandler(source, target)) {
-      alert('Invalid Move');
+//      alert('Invalid Move');
+      window.UI.showErrorMessage('Invalid move');
       return 'snapback';
     }
 
