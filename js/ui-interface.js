@@ -18,11 +18,20 @@
     function showCheckMessage() {
         toastr.info('Check');
     }
-    
+
+    function showCheckMate(player) {
+        var message = (player == WHITE) ? 'Player 1' : 'Player 2';
+        toastr.success('Checkmate!!! ' + message + ' wins!');
+
+        $('#currentPlayer').html('<h1>' + message + ' wins!</h1>');
+        window.board.destroy();
+    }
+
     window.UI = {
         setImage: setImage,
         deleteImage: removePiece,
         showErrorMessage: showError,
-        showCheckMessage: showCheckMessage
+        showCheckMessage: showCheckMessage,
+        checkMateMessage: showCheckMate
     }
 }());

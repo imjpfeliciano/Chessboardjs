@@ -54,7 +54,9 @@
       }
       var player = currentPlayer ? BLACK : WHITE;
       if(window.Utils.isInCheck(player, newPos, false)) {
-        window.Utils.checkMateValidation(player, newPos);
+        if(window.Utils.checkMateValidation(player, newPos)) {
+          window.UI.checkMateMessage(player);
+        };
       };
     }, 10);
       

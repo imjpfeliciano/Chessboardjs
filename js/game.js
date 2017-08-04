@@ -158,8 +158,47 @@ function init() {
                 || checkByKnight(player, board, kingPosition, opposite) || checkByBishop(player,  board, kingPosition, opposite);
     }
 
-    function checkMateValidation(currentPlayer, board) {
+    function movePiece(player, board, piece) {
+        var currentPiece = piece.position;
 
+        delete board[currentPiece];
+        for(var i=MINROW; i <= MAXROW; i++) {
+            for(var j=MINCOL; j <= MAXCOL; j++) {
+                var currentPosition = window.Utils.getColumnLetter(j) + i;
+                if(checkValidMove(player, piece.value, piece.position, currentPosition)) {
+                    board[currentPosition] = piece.value;
+                    if(isInCheck(player, board, true)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    function checkMateValidation(currentPlayer, board) {
+        //prevent argument by reference
+        var newBoard = JSON.stringify(board);
+        newBoard = JSON.parse(newBoard);
+
+        var pieces = [];
+        //getting all pieces from the current player
+        for(key in board) {
+            if(newBoard[key][0] == currentPlayer) {
+                pieces.push({position: key, value: newBoard[key]});
+            }
+        }
+
+        for(var i=0; i < pieces.length; i++) {
+            var canMove = movePiece(currentPlayer,newBoard, pieces[i]);
+
+            if(canMove) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
