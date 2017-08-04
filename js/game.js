@@ -35,6 +35,7 @@ function init() {
 
     //case function to validate each piece separately
     function checkValidMove(player, piece, source, target, position) {
+        if(source == target || target == 'offboard') return false;
         console.log(player);
         console.log(piece);
         console.log(source);

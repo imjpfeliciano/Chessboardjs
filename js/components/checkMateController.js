@@ -148,7 +148,8 @@
                     delete board[piece.position];
                     board[currentPosition] = piece.value;
                     //var oppositePlayer = (player == WHITE) ? BLACK : WHITE;
-                    if(isInCheck(player, board, true)) {
+                    if(!isInCheck(player, board, true)) {
+                        //continue;
                         return true;
                     }
                 }
@@ -167,7 +168,7 @@
         var oppositePlayer = (currentPlayer == WHITE) ? BLACK : WHITE;
         //getting all pieces from the current player
         for(key in board) {
-            if(newBoard[key][0] == oppositePlayer) {
+            if(newBoard[key][0] == currentPlayer) {
                 pieces.push({position: key, value: newBoard[key]});
             }
         }

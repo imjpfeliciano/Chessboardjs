@@ -38,7 +38,7 @@
         //first move of each pawn
         if(( (currentMove.srcRow == 2 && currentPlayer == WHITE && currentMove.rowDistance == 2) 
             || (currentMove.srcRow == 7 && currentPlayer == BLACK && currentMove.rowDistance == -2)) 
-            && Math.abs(currentMove.rowDistance) <=2 && currentMove.colDistance == 0)  {
+            && Math.abs(currentMove.rowDistance) <=2 && currentMove.colDistance == 0 && position[target] == undefined)  {
             
             players[currentPlayer].pawns[currentMove.srcCol]++;
             return true;
