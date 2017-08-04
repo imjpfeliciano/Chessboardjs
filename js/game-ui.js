@@ -53,7 +53,9 @@
         window.board.move(castlingTower + '-' + newTowerPosition);
       }
       var player = currentPlayer ? BLACK : WHITE;
-      window.Utils.isInCheck(player, newPos, false);
+      if(window.Utils.isInCheck(player, newPos, false)) {
+        window.Utils.checkMateValidation(player, newPos);
+      };
     }, 10);
       
     var message = currentPlayer ? 'black' : 'white';

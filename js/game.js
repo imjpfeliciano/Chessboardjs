@@ -70,15 +70,12 @@ function init() {
 
     function checkAllDirections(pieces, board, kingPosition, moves, opposite) {
         for(var i=0; i < moves.length; i++) {
-            debugger;
             var currentRow = kingPosition.x + moves[i].x;
             var currentCol = kingPosition.y + moves[i].y;
             while(currentRow >= MINROW && currentRow <= MAXROW && currentCol >= MINCOL && currentCol <= MAXCOL) {
-                debugger;
-                console.log('row: ', currentRow);
-                console.log('Col: ', currentCol);
+                
                 var currentPosition = window.Utils.getColumnLetter(currentCol) + currentRow;
-                console.log(currentPosition);
+                
                 if(board[currentPosition] != undefined 
                     && (board[currentPosition] == pieces[0] || board[currentPosition] == pieces[1])
                 ) {
@@ -159,6 +156,10 @@ function init() {
 
         return checkByPawn(player, board, kingPosition, opposite) || checkByRook(player, board, kingPosition, opposite)
                 || checkByKnight(player, board, kingPosition, opposite) || checkByBishop(player,  board, kingPosition, opposite);
+    }
+
+    function checkMateValidation(currentPlayer, board) {
+
     }
 
     /**
@@ -479,6 +480,7 @@ function init() {
     window.GameUI.setMoveHandler(pieceMoveHandler);
 
     window.Utils.isInCheck = isInCheck;
+    window.Utils.checkMateValidation = checkMateValidation;
 }
 
 document.addEventListener('DOMContentLoaded', init);
