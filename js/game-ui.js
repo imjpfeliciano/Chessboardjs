@@ -33,7 +33,8 @@
    
     var player = currentPlayer ? BLACK : WHITE;
 
-    if(window.Utils.isInCheck(player, newPos, true)) {
+    if(window.CHECK.kingIsCheck(player, newPos, true)) {
+      window.UI.showErrorMessage('Invalid move, your King is in check');
       return 'snapback';
     }
 
@@ -53,14 +54,14 @@
         window.board.move(castlingTower + '-' + newTowerPosition);
       }
       var player = currentPlayer ? BLACK : WHITE;
-      /*
-      if(window.Utils.isInCheck(player, newPos, false)) {
-        if(window.Utils.checkMateValidation(player, newPos)) {
+      if(window.CHECK.kingIsCheck(player, newPos, false)) {
+        if(window.CHECK.isCheckMate(player, newPos)) {
           board.draggable = false;
           window.UI.checkMateMessage(player);
-        };
+        } else {
+          window.UI.showCheckMessage();
+        }
       };
-      */
     }, 10);
       
     var message = currentPlayer ? 'black' : 'white';
