@@ -34,13 +34,13 @@ function init() {
 //     i.e a1: "bN" would place a black knight at the bottom left corner of the board.
 
     //case function to validate each piece separately
-    function checkValidMove(player, piece, source, target) {
+    function checkValidMove(player, piece, source, target, position) {
         console.log(player);
         console.log(piece);
         console.log(source);
         console.log(target);
         var currentMove = window.Utils.getInformation(source, target);
-        var position = window.GameUI.getPieces();
+        var position = position || window.GameUI.getPieces();
         var currentTurn = window.GameUI.getCurrentTurn();
 
         console.log(currentMove);

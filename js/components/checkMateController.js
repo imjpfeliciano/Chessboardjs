@@ -138,15 +138,17 @@
 
     function movePiece(player, currentBoard, piece) {
         var currentPiece = piece.value[1];
-
-        delete currentBoard[currentPiece];
         for(var i=MINROW; i <= MAXROW; i++) {
             for(var j=MINCOL; j <= MAXCOL; j++) {
                 var currentPosition = window.Utils.getColumnLetter(j) + i;
-                debugger;
-                if(window.GameUI.validMove(player, currentPiece, piece.position, currentPosition)) {
-                    currentBoard[currentPosition] = piece.value;
-                    if(isInCheck(player, currentBoard, true)) {
+                var board = JSON.stringify(currentBoard);
+                    board = JSON.parse(board);
+
+                if(window.GameUI.validMove(player, currentPiece, piece.position, currentPosition, board)) {
+                    delete board[piece.position];
+                    board[currentPosition] = piece.value;
+                    //var oppositePlayer = (player == WHITE) ? BLACK : WHITE;
+                    if(isInCheck(player, board, true)) {
                         return true;
                     }
                 }
@@ -162,9 +164,10 @@
         newBoard = JSON.parse(newBoard);
 
         var pieces = [];
+        var oppositePlayer = (currentPlayer == WHITE) ? BLACK : WHITE;
         //getting all pieces from the current player
         for(key in board) {
-            if(newBoard[key][0] == currentPlayer) {
+            if(newBoard[key][0] == oppositePlayer) {
                 pieces.push({position: key, value: newBoard[key]});
             }
         }
