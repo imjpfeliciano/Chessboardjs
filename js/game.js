@@ -62,7 +62,7 @@ function init() {
         if(currentTurn != currentPlayer) return false;
 
         //first move of each pawn
-        if(( (currentMove.srcRow == 2 && currentPlayer == WHITE) || (currentMove.srcRow == 7 && currentPlayer == BLACK)) 
+        if(( (currentMove.srcRow == 2 && currentPlayer == WHITE && currentMove.rowDistance == 2) || (currentMove.srcRow == 7 && currentPlayer == BLACK && currentMove.rowDistance == -2)) 
             && Math.abs(currentMove.rowDistance) <=2 && currentMove.colDistance == 0 && !isInCheck())  {
             
             players[currentPlayer].pawns[currentMove.srcCol]++;

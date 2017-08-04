@@ -6,6 +6,9 @@
   var promotion = false;
   var castling = false;
   var castlingTower = '';
+  var message = '';
+  var whiteImage = 'img/chesspieces/wikipedia/wP.png';
+  var blackImage = 'img/chesspieces/wikipedia/bP.png';
 
   function init() {
     board = window.board = new ChessBoard('board', {draggable: true, onDrop: pieceDrop, moveSpeed: 'slow'});
@@ -13,11 +16,20 @@
 
   function pieceDrop(source, target, piece, newPos, oldPos, orientation) {
     //if it isn't a valid move revert the chessboard to previous status
-    if (moveHandler && !moveHandler(source, target)) return 'snapback';
+    if (moveHandler && !moveHandler(source, target)) {
+      alert('Invalid Move');
+      return 'snapback';
+    }
 
-    if (enPassant) delete newPos[target[0] + source[1]];
+    if (enPassant) {
+      window.UI.deleteImage(newPos[target[0] + source[1]]);
+      delete newPos[target[0] + source[1]];
+    }
     if (promotion) newPos[target] = (currentPlayer) ? BLACK + QUEEN : WHITE + QUEEN;
    
+    if(oldPos[target] != undefined) {
+      window.UI.deleteImage(oldPos[target]);
+    }
     //otherwise check if a piece needs to be removed
     currentPlayer = !currentPlayer;   //change active turn
 
@@ -34,6 +46,8 @@
       
     var message = currentPlayer ? 'black' : 'white';
     console.log('Toca turno: ' + message);
+    var image = currentPlayer ? blackImage : whiteImage;
+    window.UI.setImage(image);
   }
 
   document.addEventListener('DOMContentLoaded', init);
