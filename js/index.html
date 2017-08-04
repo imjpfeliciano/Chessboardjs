@@ -20,6 +20,7 @@
   <script src="components/queenController.js"></script>
   <script src="components/kingController.js"></script>
   <script src="components/checkMateController.js"></script>
+  <script src="components/moveController.js"></script>
   <script src="game.js"></script>
 
 </head>
@@ -32,6 +33,10 @@
     <div id="blackTrash" style="width: 400px"></div>
     <div id="board" style="width: 400px"></div>
     <div id="whiteTrash" style="width: 400px"></div>
+
+    <br>
+    <button class="btn btn-danger" id="undo" onclick="window.MOVES.undo();">UNDO ACTION</button>
+    <button class="btn btn-success" id="redo" onclick="window.MOVES.redo();">REDO ACTION</button>
    
     <p>Remember, we'll evaluate both design and implementation, it's better to have two features done well, than
     5 implemented badly. </p>

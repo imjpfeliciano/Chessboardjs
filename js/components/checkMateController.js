@@ -19,7 +19,7 @@
                 && board[window.Utils.getColumnLetter(currentCol) + currentRow] != undefined
                 && board[window.Utils.getColumnLetter(currentCol) + currentRow] == piece      
             ) {
-                checkMessage(opposite);
+                //checkMessage(opposite);
                 return true;
             }
         }
@@ -57,7 +57,7 @@
                 if(board[currentPosition] != undefined 
                     && (board[currentPosition] == pieces[0] || board[currentPosition] == pieces[1])
                 ) {
-                    checkMessage(opposite);
+                    //checkMessage(opposite);
                     return true;
                 }
 
@@ -136,16 +136,17 @@
                 || checkByKnight(player, board, kingPosition, opposite) || checkByBishop(player,  board, kingPosition, opposite);
     }
 
-    function movePiece(player, board, piece) {
-        var currentPiece = piece.position;
+    function movePiece(player, currentBoard, piece) {
+        var currentPiece = piece.value[1];
 
-        delete board[currentPiece];
+        delete currentBoard[currentPiece];
         for(var i=MINROW; i <= MAXROW; i++) {
             for(var j=MINCOL; j <= MAXCOL; j++) {
                 var currentPosition = window.Utils.getColumnLetter(j) + i;
-                if(window.GameUI.validMove(player, piece.value, piece.position, currentPosition)) {
-                    board[currentPosition] = piece.value;
-                    if(isInCheck(player, board, true)) {
+                debugger;
+                if(window.GameUI.validMove(player, currentPiece, piece.position, currentPosition)) {
+                    currentBoard[currentPosition] = piece.value;
+                    if(isInCheck(player, currentBoard, true)) {
                         return true;
                     }
                 }
@@ -169,7 +170,10 @@
         }
 
         for(var i=0; i < pieces.length; i++) {
-            var canMove = movePiece(currentPlayer,newBoard, pieces[i]);
+            var currentBoard = JSON.stringify(board);
+                currentBoard = JSON.parse(currentBoard);
+
+            var canMove = movePiece(currentPlayer,currentBoard, pieces[i]);
 
             if(canMove) {
                 return false;

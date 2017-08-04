@@ -29,7 +29,18 @@
       window.UI.deleteImage(newPos[target[0] + source[1]]);
       delete newPos[target[0] + source[1]];
     }
-    if (promotion) newPos[target] = (currentPlayer) ? BLACK + QUEEN : WHITE + QUEEN;
+    if (promotion) {
+      var message = `
+        Select the piece for your promotion:
+        R: ROOK
+        N: KNIGHT
+        B: BISHOP
+        Q: QUEEN
+      `;
+      var selection = prompt(message);
+    
+      newPos[target] = (currentPlayer) ? BLACK + selection : WHITE + selection;
+    }
    
     var player = currentPlayer ? BLACK : WHITE;
 
@@ -46,7 +57,9 @@
 
     //wait for board update after new piece location
     setTimeout(function() {
+      undoStack.push({previous: oldPos, current: newPos, player: !currentPlayer});
       window.GameUI.setPieces(newPos);
+      console.log(undoStack);
       if (castling) {
         var newTowerPosition = castlingTower[0] == 'h' ? SHORTCASTLING : LONGCASLING;
         newTowerPosition += castlingTower[1];
@@ -56,7 +69,7 @@
       var player = currentPlayer ? BLACK : WHITE;
       if(window.CHECK.kingIsCheck(player, newPos, false)) {
         if(window.CHECK.isCheckMate(player, newPos)) {
-          board.draggable = false;
+          debugger;
           window.UI.checkMateMessage(player);
         } else {
           window.UI.showCheckMessage();
@@ -95,6 +108,9 @@
     },
     setCheckFlag: function(status) {
       kingInCheck = status;
+    },
+    setCurrentPlayer: function(status) {
+      currentPlayer = status;
     },
     resetFlags: function() {
       enPassant = false;

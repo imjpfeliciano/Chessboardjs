@@ -35,10 +35,15 @@ function init() {
 
     //case function to validate each piece separately
     function checkValidMove(player, piece, source, target) {
+        console.log(player);
+        console.log(piece);
+        console.log(source);
+        console.log(target);
         var currentMove = window.Utils.getInformation(source, target);
         var position = window.GameUI.getPieces();
         var currentTurn = window.GameUI.getCurrentTurn();
 
+        console.log(currentMove);
         switch(piece) {
             case 'P': return window.PAWN.checkMove(player, source, target, currentMove, position, currentTurn);
             case 'R': 
