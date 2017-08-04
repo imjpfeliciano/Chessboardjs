@@ -7,6 +7,11 @@ const KNIGHT = 'N';
 const QUEEN = 'Q';
 const KING = 'K';
 
+const MINCOL = 1;
+const MAXCOL = 8;
+const MINROW = 1;
+const MAXROW = 8;
+
 var boardPosition = {
     "a8":"bR",
     "b8":"bN",
@@ -94,6 +99,7 @@ var boardPosition = {
     window.Utils = {
         getInformation: distance,
         getColumnLetter: columnLetter,
+        getColumnNumber: columnNumber,
         getDefaultPosition: function() {
             return boardPosition;
         }

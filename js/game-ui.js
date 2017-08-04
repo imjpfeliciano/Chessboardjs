@@ -9,6 +9,10 @@
   var message = '';
   var whiteImage = 'img/chesspieces/wikipedia/wP.png';
   var blackImage = 'img/chesspieces/wikipedia/bP.png';
+  var kingInCheck = false;
+
+  const SHORTCASTLING = 'f';
+  const LONGCASLING = 'd';
 
   function init() {
     board = window.board = new ChessBoard('board', {draggable: true, onDrop: pieceDrop, moveSpeed: 'slow'});
@@ -17,8 +21,7 @@
   function pieceDrop(source, target, piece, newPos, oldPos, orientation) {
     //if it isn't a valid move revert the chessboard to previous status
     if (moveHandler && !moveHandler(source, target)) {
-//      alert('Invalid Move');
-      window.UI.showErrorMessage('Invalid move');
+      if(!kingInCheck) window.UI.showErrorMessage('Invalid move');
       return 'snapback';
     }
 
@@ -38,11 +41,13 @@
     setTimeout(function() {
       window.GameUI.setPieces(newPos);
       if (castling) {
-        var newTowerPosition = castlingTower[0] == 'h' ? 'f' : 'd';
+        var newTowerPosition = castlingTower[0] == 'h' ? SHORTCASTLING : LONGCASLING;
         newTowerPosition += castlingTower[1];
 
         window.board.move(castlingTower + '-' + newTowerPosition);
       }
+      var player = currentPlayer ? BLACK : WHITE;
+      window.Utils.isInCheck(player, newPos, false);
     }, 10);
       
     var message = currentPlayer ? 'black' : 'white';
@@ -74,10 +79,14 @@
       castling = status;
       castlingTower = positionTower;
     },
+    setCheckFlag: function(status) {
+      kingInCheck = status;
+    },
     resetFlags: function() {
       enPassant = false;
       promotion = false;
       castling = false;
+      kingInCheck = false;
     },
     getCurrentTurn: function() {
       return currentPlayer ? 'b' : 'w';

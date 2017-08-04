@@ -15,9 +15,14 @@
         toastr.error(message);
     }
 
+    function showCheckMessage() {
+        toastr.info('Check');
+    }
+    
     window.UI = {
         setImage: setImage,
         deleteImage: removePiece,
-        showErrorMessage: showError
+        showErrorMessage: showError,
+        showCheckMessage: showCheckMessage
     }
 }());

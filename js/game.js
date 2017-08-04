@@ -20,9 +20,106 @@ function init() {
 //       Q: Queen
 //       K: King
 //     i.e a1: "bN" would place a black knight at the bottom left corner of the board.
+    function checkMessage(opposite) {
+        if(opposite) {
+            window.UI.showErrorMessage('Invalid Move, your King is in check');
+            window.GameUI.setCheckFlag(true);
+        } else {
+            window.UI.showCheckMessage();
+        }
+    }    
 
-    function isInCheck(player, board) {
+    function checkPositions(piece, board, kingPosition, moves, opposite) {
+        for(var i=0; i < moves.length; i++) {
+            var currentRow = kingPosition.x + moves[i].x;
+            var currentCol = kingPosition.y + moves[i].y;
+            if(currentRow >= MINROW && currentRow <= MAXROW
+                && currentCol >= MINCOL && currentCol <= MAXCOL
+                && board[window.Utils.getColumnLetter(currentCol) + currentRow] != undefined
+                && board[window.Utils.getColumnLetter(currentCol) + currentRow] == piece      
+            ) {
+                checkMessage(opposite);
+                return true;
+            }
+        }
+
         return false;
+    }
+
+    function checkByPawn(player, board, kingPosition, opposite) {
+        
+        if(player == WHITE) {
+            var piece = BLACK + PAWN;
+            var validMoves = [
+                {x: 1, y:1},
+                {x: 1, y:-1}
+            ];
+        } else {
+            var piece = WHITE + PAWN;
+            var validMoves = [
+                {x: -1, y:1},
+                {x: -1, y:-1}
+            ];
+        }
+
+        return checkPositions(piece, board, kingPosition, validMoves, opposite);
+    }
+
+    function checkByRook(player, board) {
+        var rookPiece = (player == WHITE) ? BLACK + ROOK : WHITE + ROOK;
+        var queenPiece = (player == WHITE) ? BLACK + QUEEN : WHITE + QUEEN;
+        var validMoves = [
+            {x: 0, y:0},
+            {x: 0, y:0},
+            {x: 0, y:0},
+            {x: 0, y:0}
+        ];
+
+        return false;
+    }
+
+    function checkByKnight(player, board, kingPosition, opposite) {
+        var piece = (player == WHITE) ? BLACK + KNIGHT : WHITE + KNIGHT;
+        var validMoves = [
+            {x: 1, y:-2},
+            {x: 2, y:-1},
+            {x: 2, y:1},
+            {x: 1, y:2},
+            {x: -1, y:2},
+            {x: -2, y:1},
+            {x: -2, y:-1},
+            {x: -1, y:-2}
+        ];
+
+        return checkPositions(piece, board, kingPosition, validMoves, opposite);
+    }
+
+    function checkByBishop(player, board) {
+        var bishopPiece = (player == WHITE) ? BLACK + BISHOP : WHITE + BISHOP;
+        var queenPiece = (player == WHITE) ? BLACK + QUEEN : WHITE + QUEEN;
+        var validMoves = [
+            {x: 0, y:0},
+            {x: 0, y:0},
+            {x: 0, y:0},
+            {x: 0, y:0}
+        ];
+
+        return false;
+    }
+
+    function isInCheck(player, board, opposite) {
+        var kingPiece = player + KING;
+        for(key in board) {
+            if(board[key] == kingPiece) {
+                var kingPosition = {
+                    x: parseInt(key[1]),
+                    y: window.Utils.getColumnNumber(key[0])
+                };
+                break;
+            }
+        }
+        return checkByPawn(player, board, kingPosition, opposite) || checkByRook(player, board, kingPosition)
+                || checkByKnight(player, board, kingPosition, opposite) || checkByBishop(player,  board, kingPosition);
     }
 
     /**
@@ -32,7 +129,7 @@ function init() {
      */
     function validatePromotion(board, moveInformation, currentPlayer) {
         //if it is a black piece, then i need to check for first row, otherwise check for the eigth row
-        return (currentPlayer == BLACK && moveInformation.tarRow == 1) || (currentPlayer == WHITE && moveInformation.tarRow == 8);
+        return ((currentPlayer == BLACK && moveInformation.tarRow == 1) || (currentPlayer == WHITE && moveInformation.tarRow == 8)) && !isInCheck(currentPlayer, board, true);
     }
 
     /**
@@ -45,11 +142,11 @@ function init() {
 
         //if the target position is empty and the cell between source and target is a piece of the opposite color
         //and it is a PAWN piece that was moved two cells for first time
-        return board[moveInformation.targetColor + moveInformation.tarRow] == undefined
+        return (board[moveInformation.targetColor + moveInformation.tarRow] == undefined
                 && board[moveInformation.targetColor + moveInformation.srcRow] != undefined
                 && board[moveInformation.targetColor + moveInformation.srcRow][0] != currentPlayer 
                 && board[moveInformation.targetColor + moveInformation.srcRow][1] == PAWN
-                && players[opposite].pawns[moveInformation.tarCol] == 1;
+                && players[opposite].pawns[moveInformation.tarCol] == 1) && !isInCheck(currentPlayer, board, true);
     }
     
     /**
@@ -62,8 +159,9 @@ function init() {
         if(currentTurn != currentPlayer) return false;
 
         //first move of each pawn
-        if(( (currentMove.srcRow == 2 && currentPlayer == WHITE && currentMove.rowDistance == 2) || (currentMove.srcRow == 7 && currentPlayer == BLACK && currentMove.rowDistance == -2)) 
-            && Math.abs(currentMove.rowDistance) <=2 && currentMove.colDistance == 0 && !isInCheck())  {
+        if(( (currentMove.srcRow == 2 && currentPlayer == WHITE && currentMove.rowDistance == 2) 
+            || (currentMove.srcRow == 7 && currentPlayer == BLACK && currentMove.rowDistance == -2)) 
+            && Math.abs(currentMove.rowDistance) <=2 && currentMove.colDistance == 0 && !isInCheck(currentPlayer, position, true))  {
             
             players[currentPlayer].pawns[currentMove.srcCol]++;
             return true;
@@ -75,8 +173,8 @@ function init() {
             
             //if it is only a step forward
             if(currentMove.colDistance == 0) {
-                return ((currentMove.rowDistance == -1 && currentPlayer == BLACK) || (currentMove.rowDistance == 1 && currentPlayer == WHITE)) 
-                        && position[target] == undefined;
+                return (((currentMove.rowDistance == -1 && currentPlayer == BLACK) || (currentMove.rowDistance == 1 && currentPlayer == WHITE)) 
+                        && position[target] == undefined) && !isInCheck(currentPlayer, position, true);
             } else {
                 //if it is a step in diagonal form and the target position is empty,
                 //then it needs to check if is a valid en passant move
@@ -88,8 +186,8 @@ function init() {
                     }
                 } else {
                     //win against piece of other color
-                    return ((currentMove.rowDistance == -1 && currentPlayer == BLACK) || (currentMove.rowDistance == 1 && currentPlayer == WHITE)) 
-                            && position[target][0] != currentPlayer;
+                    return (((currentMove.rowDistance == -1 && currentPlayer == BLACK) || (currentMove.rowDistance == 1 && currentPlayer == WHITE)) 
+                            && position[target][0] != currentPlayer) && !isInCheck(currentPlayer, position, true);
                 }
             }
         } 
@@ -161,11 +259,11 @@ function init() {
         //check if is turn of the selected piece color
         if(currentTurn != currentPlayer) return false;
 
-        if( (
+        if( ((
             Math.abs(currentMove.rowDistance) == 1 && Math.abs(currentMove.colDistance) == 2 
             || (Math.abs(currentMove.rowDistance) == 2 && Math.abs(currentMove.colDistance) == 1)
             )
-            && (position[target] == undefined || position[target][0] != currentPlayer) ) {
+            && (position[target] == undefined || position[target][0] != currentPlayer) ) && !isInCheck(currentPlayer, position, true)) {
             return true;
         }
 
@@ -219,7 +317,8 @@ function init() {
     //The queen uses rookMoves for rows and columns and bishopMoves for diagonals,
     //so if any of these moves are valid, the queen move also is valid
     function validateQueenMove(currentPlayer, source, target, currentMove, position, currentTurn) {
-        return validateRookMove(currentPlayer, source, target, currentMove, position, currentTurn) || validateBishopMove(currentPlayer, source, target, currentMove, position, currentTurn) ;
+        return validateRookMove(currentPlayer, source, target, currentMove, position, currentTurn) 
+            || validateBishopMove(currentPlayer, source, target, currentMove, position, currentTurn) ;
     }
 
     /**
@@ -268,7 +367,8 @@ function init() {
         if(Math.abs(currentMove.rowDistance) > 1) return false;
         
         //validate castrling here
-        if( Math.abs(currentMove.colDistance) == 2 && ((currentMove.tarRow == 1 && currentPlayer == WHITE) || (currentMove.tarRow == 8 && currentPlayer == BLACK)) ) {
+        if( Math.abs(currentMove.colDistance) == 2 && ((currentMove.tarRow == 1 && currentPlayer == WHITE) 
+            || (currentMove.tarRow == 8 && currentPlayer == BLACK)) ) {
             return validateCastlingMove(position, currentMove, currentPlayer);
         } else {
             if( (currentMove.colDistance >= -1 && currentMove.colDistance <= 1) 
@@ -310,7 +410,7 @@ function init() {
         if(from == to || to == 'offboard') return false;
         window.GameUI.resetFlags(false);
 
-        position = window.board.position();
+        position = window.GameUI.getPieces();
 
         var currentPiece = position[from];
         var player = currentPiece[0];
@@ -338,6 +438,8 @@ function init() {
     
     window.GameUI.setPieces(position, useAnimation);
     window.GameUI.setMoveHandler(pieceMoveHandler);
+
+    window.Utils.isInCheck = isInCheck;
 }
 
 document.addEventListener('DOMContentLoaded', init);
