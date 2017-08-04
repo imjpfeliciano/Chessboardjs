@@ -53,11 +53,14 @@
         window.board.move(castlingTower + '-' + newTowerPosition);
       }
       var player = currentPlayer ? BLACK : WHITE;
+      /*
       if(window.Utils.isInCheck(player, newPos, false)) {
         if(window.Utils.checkMateValidation(player, newPos)) {
+          board.draggable = false;
           window.UI.checkMateMessage(player);
         };
       };
+      */
     }, 10);
       
     var message = currentPlayer ? 'black' : 'white';
@@ -99,7 +102,7 @@
       kingInCheck = false;
     },
     getCurrentTurn: function() {
-      return currentPlayer ? 'b' : 'w';
+      return currentPlayer ? BLACK : WHITE;
     }
   }
 }());

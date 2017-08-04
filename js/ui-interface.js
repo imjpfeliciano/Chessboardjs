@@ -24,7 +24,6 @@
         toastr.success('Checkmate!!! ' + message + ' wins!');
 
         $('#currentPlayer').html('<h1>' + message + ' wins!</h1>');
-        window.board.destroy();
     }
 
     window.UI = {
