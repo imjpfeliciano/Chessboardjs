@@ -20,6 +20,8 @@ function init() {
 //       Q: Queen
 //       K: King
 //     i.e a1: "bN" would place a black knight at the bottom left corner of the board.
+    
+    //if we're checking current player then show check message, otherwise it is an invalid move
     function checkMessage(opposite) {
         if(opposite) {
             window.UI.showErrorMessage('Invalid Move, your King is in check');
@@ -29,6 +31,7 @@ function init() {
         }
     }    
 
+    //pawns and knights have similar movements, only check for static positions
     function checkPositions(piece, board, kingPosition, moves, opposite) {
         for(var i=0; i < moves.length; i++) {
             var currentRow = kingPosition.x + moves[i].x;
@@ -46,8 +49,8 @@ function init() {
         return false;
     }
 
+    //pawns have only two possibilities for check
     function checkByPawn(player, board, kingPosition, opposite) {
-        
         if(player == WHITE) {
             var piece = BLACK + PAWN;
             var validMoves = [
@@ -65,19 +68,50 @@ function init() {
         return checkPositions(piece, board, kingPosition, validMoves, opposite);
     }
 
-    function checkByRook(player, board) {
-        var rookPiece = (player == WHITE) ? BLACK + ROOK : WHITE + ROOK;
-        var queenPiece = (player == WHITE) ? BLACK + QUEEN : WHITE + QUEEN;
-        var validMoves = [
-            {x: 0, y:0},
-            {x: 0, y:0},
-            {x: 0, y:0},
-            {x: 0, y:0}
-        ];
+    function checkAllDirections(pieces, board, kingPosition, moves, opposite) {
+        for(var i=0; i < moves.length; i++) {
+            debugger;
+            var currentRow = kingPosition.x + moves[i].x;
+            var currentCol = kingPosition.y + moves[i].y;
+            while(currentRow >= MINROW && currentRow <= MAXROW && currentCol >= MINCOL && currentCol <= MAXCOL) {
+                debugger;
+                console.log('row: ', currentRow);
+                console.log('Col: ', currentCol);
+                var currentPosition = window.Utils.getColumnLetter(currentCol) + currentRow;
+                console.log(currentPosition);
+                if(board[currentPosition] != undefined 
+                    && (board[currentPosition] == pieces[0] || board[currentPosition] == pieces[1])
+                ) {
+                    checkMessage(opposite);
+                    return true;
+                }
 
+                if(board[currentPosition] != undefined) break;
+
+                currentRow = currentRow + moves[i].x;
+                currentCol = currentCol + moves[i].y;
+            }
+        }
         return false;
     }
 
+    function checkByRook(player, board, kingPosition, opposite) {
+        var rookPiece = (player == WHITE) ? BLACK + ROOK : WHITE + ROOK;
+        var queenPiece = (player == WHITE) ? BLACK + QUEEN : WHITE + QUEEN;
+
+        var pieces = [rookPiece, queenPiece];
+
+        var validMoves = [
+            {x: 0, y:-1},
+            {x: 0, y:1},
+            {x: 1, y:0},
+            {x: -1, y:0}
+        ];
+
+        return checkAllDirections(pieces, board, kingPosition, validMoves, opposite);
+    }
+
+    //kight have eight possibles cells for check
     function checkByKnight(player, board, kingPosition, opposite) {
         var piece = (player == WHITE) ? BLACK + KNIGHT : WHITE + KNIGHT;
         var validMoves = [
@@ -94,17 +128,21 @@ function init() {
         return checkPositions(piece, board, kingPosition, validMoves, opposite);
     }
 
-    function checkByBishop(player, board) {
+
+    function checkByBishop(player, board, kingPosition, opposite) {
         var bishopPiece = (player == WHITE) ? BLACK + BISHOP : WHITE + BISHOP;
         var queenPiece = (player == WHITE) ? BLACK + QUEEN : WHITE + QUEEN;
+        
+        var pieces = [bishopPiece, queenPiece];
+        
         var validMoves = [
-            {x: 0, y:0},
-            {x: 0, y:0},
-            {x: 0, y:0},
-            {x: 0, y:0}
+            {x: -1, y:1},
+            {x: 1, y:1},
+            {x: -1, y:-1},
+            {x: 1, y:-1}
         ];
 
-        return false;
+        return checkAllDirections(pieces, board, kingPosition, validMoves, opposite);
     }
 
     function isInCheck(player, board, opposite) {
@@ -118,8 +156,9 @@ function init() {
                 break;
             }
         }
-        return checkByPawn(player, board, kingPosition, opposite) || checkByRook(player, board, kingPosition)
-                || checkByKnight(player, board, kingPosition, opposite) || checkByBishop(player,  board, kingPosition);
+
+        return checkByPawn(player, board, kingPosition, opposite) || checkByRook(player, board, kingPosition, opposite)
+                || checkByKnight(player, board, kingPosition, opposite) || checkByBishop(player,  board, kingPosition, opposite);
     }
 
     /**
@@ -129,7 +168,7 @@ function init() {
      */
     function validatePromotion(board, moveInformation, currentPlayer) {
         //if it is a black piece, then i need to check for first row, otherwise check for the eigth row
-        return ((currentPlayer == BLACK && moveInformation.tarRow == 1) || (currentPlayer == WHITE && moveInformation.tarRow == 8));
+        return ((currentPlayer == BLACK && moveInformation.tarRow == MINROW) || (currentPlayer == WHITE && moveInformation.tarRow == MAXROW));
     }
 
     /**
@@ -146,7 +185,7 @@ function init() {
                 && board[moveInformation.targetColor + moveInformation.srcRow] != undefined
                 && board[moveInformation.targetColor + moveInformation.srcRow][0] != currentPlayer 
                 && board[moveInformation.targetColor + moveInformation.srcRow][1] == PAWN
-                && players[opposite].pawns[moveInformation.tarCol] == 1);
+                && players[opposite].pawns[moveInformation.tarCol] == MINCOL);
     }
     
     /**
@@ -202,8 +241,8 @@ function init() {
      */
     function validateFirstRookMove(currentPlayer, source, target, currentMove) {
         //if it is the first time a rook piece is moved, then give a sign in the players object
-        if( ((currentMove.srcCol == 1 || currentMove.srcCol == 8) && currentMove.srcRow == 1 && currentPlayer == WHITE && players[WHITE].rooks[currentMove.srcCol] == 0) 
-         || ((currentMove.srcCol == 1 || currentMove.srcCol == 8) && currentMove.srcRow == 8 && currentPlayer == BLACK && players[BLACK].rooks[currentMove.srcCol] == 0) ) {
+        if( ((currentMove.srcCol == MINCOL || currentMove.srcCol == MAXCOL) && currentMove.srcRow == MINROW && currentPlayer == WHITE && players[WHITE].rooks[currentMove.srcCol] == 0) 
+         || ((currentMove.srcCol == MINCOL || currentMove.srcCol == MAXCOL) && currentMove.srcRow == MAXROW && currentPlayer == BLACK && players[BLACK].rooks[currentMove.srcCol] == 0) ) {
              players[currentPlayer].rooks[currentMove.srcCol] = 1;
          }
     }
@@ -367,8 +406,8 @@ function init() {
         if(Math.abs(currentMove.rowDistance) > 1) return false;
         
         //validate castrling here
-        if( Math.abs(currentMove.colDistance) == 2 && ((currentMove.tarRow == 1 && currentPlayer == WHITE) 
-            || (currentMove.tarRow == 8 && currentPlayer == BLACK)) ) {
+        if( Math.abs(currentMove.colDistance) == 2 && ((currentMove.tarRow == MINROW && currentPlayer == WHITE) 
+            || (currentMove.tarRow == MAXROW && currentPlayer == BLACK)) ) {
             return validateCastlingMove(position, currentMove, currentPlayer);
         } else {
             if( (currentMove.colDistance >= -1 && currentMove.colDistance <= 1) 
