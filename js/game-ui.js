@@ -31,6 +31,12 @@
     }
     if (promotion) newPos[target] = (currentPlayer) ? BLACK + QUEEN : WHITE + QUEEN;
    
+    var player = currentPlayer ? BLACK : WHITE;
+
+    if(window.Utils.isInCheck(player, newPos, true)) {
+      return 'snapback';
+    }
+
     if(oldPos[target] != undefined) {
       window.UI.deleteImage(oldPos[target]);
     }

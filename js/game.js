@@ -129,7 +129,7 @@ function init() {
      */
     function validatePromotion(board, moveInformation, currentPlayer) {
         //if it is a black piece, then i need to check for first row, otherwise check for the eigth row
-        return ((currentPlayer == BLACK && moveInformation.tarRow == 1) || (currentPlayer == WHITE && moveInformation.tarRow == 8)) && !isInCheck(currentPlayer, board, true);
+        return ((currentPlayer == BLACK && moveInformation.tarRow == 1) || (currentPlayer == WHITE && moveInformation.tarRow == 8));
     }
 
     /**
@@ -146,7 +146,7 @@ function init() {
                 && board[moveInformation.targetColor + moveInformation.srcRow] != undefined
                 && board[moveInformation.targetColor + moveInformation.srcRow][0] != currentPlayer 
                 && board[moveInformation.targetColor + moveInformation.srcRow][1] == PAWN
-                && players[opposite].pawns[moveInformation.tarCol] == 1) && !isInCheck(currentPlayer, board, true);
+                && players[opposite].pawns[moveInformation.tarCol] == 1);
     }
     
     /**
@@ -161,7 +161,7 @@ function init() {
         //first move of each pawn
         if(( (currentMove.srcRow == 2 && currentPlayer == WHITE && currentMove.rowDistance == 2) 
             || (currentMove.srcRow == 7 && currentPlayer == BLACK && currentMove.rowDistance == -2)) 
-            && Math.abs(currentMove.rowDistance) <=2 && currentMove.colDistance == 0 && !isInCheck(currentPlayer, position, true))  {
+            && Math.abs(currentMove.rowDistance) <=2 && currentMove.colDistance == 0)  {
             
             players[currentPlayer].pawns[currentMove.srcCol]++;
             return true;
@@ -174,7 +174,7 @@ function init() {
             //if it is only a step forward
             if(currentMove.colDistance == 0) {
                 return (((currentMove.rowDistance == -1 && currentPlayer == BLACK) || (currentMove.rowDistance == 1 && currentPlayer == WHITE)) 
-                        && position[target] == undefined) && !isInCheck(currentPlayer, position, true);
+                        && position[target] == undefined);
             } else {
                 //if it is a step in diagonal form and the target position is empty,
                 //then it needs to check if is a valid en passant move
@@ -187,7 +187,7 @@ function init() {
                 } else {
                     //win against piece of other color
                     return (((currentMove.rowDistance == -1 && currentPlayer == BLACK) || (currentMove.rowDistance == 1 && currentPlayer == WHITE)) 
-                            && position[target][0] != currentPlayer) && !isInCheck(currentPlayer, position, true);
+                            && position[target][0] != currentPlayer);
                 }
             }
         } 
@@ -263,7 +263,7 @@ function init() {
             Math.abs(currentMove.rowDistance) == 1 && Math.abs(currentMove.colDistance) == 2 
             || (Math.abs(currentMove.rowDistance) == 2 && Math.abs(currentMove.colDistance) == 1)
             )
-            && (position[target] == undefined || position[target][0] != currentPlayer) ) && !isInCheck(currentPlayer, position, true)) {
+            && (position[target] == undefined || position[target][0] != currentPlayer) )) {
             return true;
         }
 
